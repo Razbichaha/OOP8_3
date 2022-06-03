@@ -373,9 +373,9 @@ namespace OOP8_3
                         break;
                     case Slinger slinger:
                         //Slinger slinger1 = new Slinger();
-                        //slinger
+                        slinger
                         ;
-                        o = slinger;
+                       
                        // type=slinger
 
                         classWarior = slinger;
