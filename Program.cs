@@ -349,7 +349,11 @@ namespace OOP8_3
             Armor = _configs.Armor[index];
             Damage = _configs.Damage[index];
         }
-
+        /// <summary>
+        /// Это кастыль
+        /// </summary>
+        /// <param name="attackingWarrior"></param>
+        /// <param name="defendingWarrior"></param>
         internal void DamagAbility(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             
