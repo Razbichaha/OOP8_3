@@ -8,13 +8,13 @@ namespace OOP8_3
     {
         static void Main(string[] args)
         {
-            Core core = new();
+            ProgramCore core = new();
             core.Game();
             Console.ReadLine();
         }
     }
 
-    class Core
+    class ProgramCore
     {
         private Warrior[] _warriors = { new Archer(), new Slinger(), new SwordsMan(), new SpearMan(), new Knight() };
         private UI _ui = new();
@@ -240,7 +240,7 @@ namespace OOP8_3
                 Console.Write("Выберите номер второго гладиатора - ");
                 string secondGladiatorString = Console.ReadLine();
 
-                if (IsNumber(secondGladiatorString, ref secondGladiator) & secondGladiator <= countGladiators & secondGladiator > 0&firstGladiator !=secondGladiator)
+                if (IsNumber(secondGladiatorString, ref secondGladiator) & secondGladiator <= countGladiators & secondGladiator > 0 & firstGladiator != secondGladiator)
                 {
                     continueSelection = false;
                 }
@@ -251,15 +251,15 @@ namespace OOP8_3
                     continueSelection = true;
                 }
             }
-                firstGladiator--;
-                secondGladiator--;
+            firstGladiator--;
+            secondGladiator--;
         }
 
         private void ShowParametr(string nameParametr, int parametr, int maximumParametr, char simvol, ConsoleColor color)
         {
-            double Procent100 = 100;
-            double procent = Procent100 / (double)maximumParametr * (double)parametr;
-            double temp = _configs.MaximumLengthBar / Procent100 * (double)procent;
+            double procent100 = 100;
+            double procent = procent100 / (double)maximumParametr * (double)parametr;
+            double temp = _configs.MaximumLengthBar / procent100 * (double)procent;
             int lengthBar = (int)temp;
             Console.ForegroundColor = color;
             string bar = "";
@@ -283,17 +283,11 @@ namespace OOP8_3
     {
         private Configs _configs = new();
 
-        private string _classWarriors;
-        private int _healt;
-        private int _fury;
-        private int _armor;
-        private int _damage;
-
-        internal string ClassWarriors { get => _classWarriors; set => _classWarriors = value; }
-        internal int Healt { get => _healt; set => _healt = value; }
-        internal int Fury { get => _fury; set => _fury = value; }
-        internal int Armor { get => _armor; set => _armor = value; }
-        internal int Damage { get => _damage; set => _damage = value; }
+        internal string ClassWarriors { get; private set; }
+        internal int Healt { get; set; }
+        internal int Fury { get; set; }
+        internal int Armor { get; set; }
+        internal int Damage { get; set; }
 
         internal void CreateWariors(int index)
         {
