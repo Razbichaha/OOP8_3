@@ -29,12 +29,7 @@ namespace OOP8_3
         private UI _ui = new();
         private Configs _configs = new();
         private Fight _fight = new();
-        private Warrior[] _gladiators=new Warrior[2];
-        //private object _firstGladiator;
-        //private object _secondGladiator;
-
-        // Type _type = typeof(Warrior);
-
+        private Warrior[] _gladiators;
 
         internal void Game()
         {
@@ -43,9 +38,7 @@ namespace OOP8_3
             Console.ReadLine();
             _ui.ShowWarriors();
             ChooseGladiators();
-            //Console.ReadLine();
             ShowGladiatorParameters();
-            //Console.ReadLine();
             StartFight();
         }
 
@@ -68,40 +61,11 @@ namespace OOP8_3
 
         private void AddGladiators(int firstGladiator, int secondGladiator)
         {
-            for (int i = 0; i < _gladiators.Length; i++)
-            {
-                int number = i;
-                int classWarior = firstGladiator;
+            Warrior[] gladiatorsTemp = new Warrior[_configs.GladiatorsInArena];
 
-                if (i == 0)
-                    classWarior = firstGladiator;
-                else if (i == 1)
-                    classWarior = secondGladiator;
-
-                //  _gladiators[0] = _warriors[firstGladiator];
-                //  _gladiators[1] = _warriors[secondGladiator];
-
-                switch (_warriors[classWarior])
-                {
-                    case Archer archer:
-                        // _gladiators[number] = _warriors[classWarior];
-
-                        _gladiators[number] = archer;
-                        break;
-                    case Slinger slinger:
-                        _gladiators[number] = slinger;
-                        break;
-                    case SwordsMan swordsMan:
-                        _gladiators[number] = swordsMan;
-                        break;
-                    case SpearMan spearMan:
-                        _gladiators[number] = spearMan;
-                        break;
-                    case Knight knight:
-                        _gladiators[number] = knight;
-                        break;
-                }
-            }
+            gladiatorsTemp[0] = _warriors[firstGladiator];
+            gladiatorsTemp[1] = _warriors[secondGladiator];
+            _gladiators = gladiatorsTemp;
         }
 
         private void ShowGladiatorParameters()
@@ -122,7 +86,6 @@ namespace OOP8_3
         private void StartFight()
         {
             int firstFighter = _fight.WhoFirst(_gladiators.Length);
-
             bool continueFight = true;
             int move = firstFighter;
 
@@ -132,9 +95,8 @@ namespace OOP8_3
 
                 if (_gladiators[move].Fury == _configs.GetFuryWarrior(_gladiators[move].ClassWarriors))
                 {
-                    //  _gladiators[move].AttackFuriously(_gladiators[move], _gladiators[MoveAbout(move)]);
-                   _gladiators[move]. DamagAbility(_gladiators[move], _gladiators[MoveAbout(move)]);
-
+                    _gladiators[move].AttackFuriously(_gladiators[move], _gladiators[MoveAbout(move)]);
+                    _gladiators[move].Fury = 0;
                 }
 
                 ShowGladiatorParameters();
@@ -160,9 +122,8 @@ namespace OOP8_3
             int temp = 0;
 
             if (move == 0)
-            {
                 temp = 1;
-            }
+
             return temp;
         }
     }
@@ -213,6 +174,7 @@ namespace OOP8_3
     class UI
     {
         Configs _configs = new();
+
         internal void ShowNewGame()
         {
             Console.Clear();
@@ -242,7 +204,6 @@ namespace OOP8_3
         internal void ShowWarriors()
         {
             Console.Clear();
-            ;
 
             for (int i = 0; i < _configs.ClassWarriors.Length; i++)
             {
@@ -275,9 +236,14 @@ namespace OOP8_3
                 }
                 else
                 {
+                    firstGladiatorString = "";
                     Console.WriteLine("Вы ввели не корректные данные\nПопробуйте ещё.");
-                    continueSelection = true;
                 }
+            }
+            continueSelection = true;
+
+            while (continueSelection)
+            {
 
                 Console.WriteLine();
                 Console.Write("Выберите номер второго гладиатора - ");
@@ -289,12 +255,13 @@ namespace OOP8_3
                 }
                 else
                 {
+                    secondGladiatorString = "";
                     Console.WriteLine("Вы ввели не корректные данные\nПопробуйте ещё.");
                     continueSelection = true;
                 }
+            }
                 firstGladiator--;
                 secondGladiator--;
-            }
         }
 
         private void ShowParametr(string nameParametr, int parametr, int maximumParametr, char simvol, ConsoleColor color)
@@ -317,16 +284,12 @@ namespace OOP8_3
         private bool IsNumber(string text, ref int number)
         {
             bool isNumber = int.TryParse(text, out number);
-
             return isNumber;
         }
-
     }
 
-    /*abstract*/
-    class Warrior : IAbility
+    class Warrior
     {
-
         private Configs _configs = new();
 
         private string _classWarriors;
@@ -335,11 +298,11 @@ namespace OOP8_3
         private int _armor;
         private int _damage;
 
-        public string ClassWarriors { get => _classWarriors; set => _classWarriors = value; }
-        public int Healt { get => _healt; set => _healt = value; }
-        public int Fury { get => _fury; set => _fury = value; }
-        public int Armor { get => _armor; set => _armor = value; }
-        public int Damage { get => _damage; set => _damage = value; }
+        internal string ClassWarriors { get => _classWarriors; set => _classWarriors = value; }
+        internal int Healt { get => _healt; set => _healt = value; }
+        internal int Fury { get => _fury; set => _fury = value; }
+        internal int Armor { get => _armor; set => _armor = value; }
+        internal int Damage { get => _damage; set => _damage = value; }
 
         internal void CreateWariors(int index)
         {
@@ -349,129 +312,73 @@ namespace OOP8_3
             Armor = _configs.Armor[index];
             Damage = _configs.Damage[index];
         }
-        /// <summary>
-        /// Это кастыль
-        /// </summary>
-        /// <param name="attackingWarrior"></param>
-        /// <param name="defendingWarrior"></param>
-        internal void DamagAbility(Warrior attackingWarrior, Warrior defendingWarrior)
+
+        internal virtual void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
-            
-
-            for (int i = 0; i < 2; i++)
-            {
-                int number = i;
-                Warrior classWarior = attackingWarrior;
-
-                if (i == 0)
-                    classWarior = attackingWarrior;
-                else if (i == 1)
-                    classWarior = defendingWarrior;
-
-                switch (classWarior)
-                {
-                    case Archer archer:
-                        // _gladiators[number] = _warriors[classWarior];
-
-                       classWarior = archer;
-                        break;
-                    case Slinger slinger:
-                        //Slinger slinger1 = new Slinger();
-                        slinger
-                        ;
-                       
-                       // type=slinger
-
-                        classWarior = slinger;
-                        //slinger1 = classWarior;
-                        ;
-                       //slinger.
-                      
-
-                        break;
-                    case SwordsMan swordsMan:
-                        classWarior = swordsMan;
-                        break;
-                    case SpearMan spearMan:
-                        classWarior = spearMan;
-                        break;
-                    case Knight knight:
-                        classWarior = knight;
-                        break;
-                }
-
-                
-            }
-
         }
 
     }
 
-    class Archer : Warrior, IAbility// лучник
+    internal class Archer : Warrior
     {
-        void  IAbility.AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
+        internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             int multiplier = 2;
-            int damag = attackingWarrior.Damage * multiplier;
-            defendingWarrior.Healt -= damag;
+            int damage = attackingWarrior.Damage * multiplier;
+            defendingWarrior.Healt -= damage;
             attackingWarrior.Fury = 0;
         }
-
     }
 
-    class Slinger : Warrior//пращник
+    class Slinger : Warrior
     {
-        internal void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
+        internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             int multiplier = 5;
-
-            int damagArmor = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= damagArmor;
+            int armorDamage = attackingWarrior.Damage / multiplier;
+            defendingWarrior.Armor -= armorDamage;
             defendingWarrior.Healt -= attackingWarrior.Damage;
             defendingWarrior.Fury = 0;
         }
     }
 
-    class SwordsMan : Warrior//мечник
+    class SwordsMan : Warrior
     {
-        internal void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
+        internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             int multiplier = 3;
-            int damagArmor = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= damagArmor;
+            int armorDamage = attackingWarrior.Damage / multiplier;
+            defendingWarrior.Armor -= armorDamage;
             defendingWarrior.Healt -= attackingWarrior.Damage;
             defendingWarrior.Fury = 0;
         }
     }
 
-    class SpearMan : Warrior//копейщик
+    class SpearMan : Warrior
     {
-        internal void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
+        internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
-
-            int damagArmor = attackingWarrior.Damage;
-            defendingWarrior.Armor -= damagArmor;
+            int armorDamage = attackingWarrior.Damage;
+            defendingWarrior.Armor -= armorDamage;
             defendingWarrior.Healt -= attackingWarrior.Damage;
             defendingWarrior.Fury = 0;
         }
     }
 
-    class Knight : Warrior //рыцарь
+    class Knight : Warrior
     {
-        internal  void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
+        internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             int multiplier = 2;
-            int damagArmor = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= damagArmor / multiplier;
+            int armorDamage = attackingWarrior.Damage / multiplier;
+            defendingWarrior.Armor -= armorDamage / multiplier;
             defendingWarrior.Healt -= attackingWarrior.Damage;
             defendingWarrior.Fury = 0;
         }
     }
-
 
     class Configs
     {
-        private string[] _listParametrs = { "damage", "healt", "fury", "armor", "evasion" };
         internal readonly string[] ClassWarriors = { "Лучник", "Пращник", "Мечник", "Копейщик", "Рыцарь" };
 
         private int[] _damage = { 550, 500, 800, 600, 600 };
@@ -488,11 +395,12 @@ namespace OOP8_3
         internal int FuryIncrement { get => _furyIncrement; }
         internal int DamageWhichAddFury { get => _damageWhichAddFury; }
         internal int GladiatorsInArena { get => _gladiatorsInArena; }
+        internal int StopFight { get => _stopFight; }
         internal int[] Healt { get => _healt; }
         internal int[] Fury { get => _fury; }
         internal int[] Armor { get => _armor; }
         internal int[] Damage { get => _damage; }
-        public int StopFight { get => _stopFight; }
+
 
         internal int GetIndexClassWarior(string classWarior)
         {
@@ -515,23 +423,5 @@ namespace OOP8_3
             int fury = _fury[index];
             return fury;
         }
-
-
-    }
-
-    interface IAbility
-    {
-
-
-        internal void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
-        {
-            int multiplier = 5;
-            int damagArmor = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= damagArmor;
-            defendingWarrior.Healt -= attackingWarrior.Damage;
-            defendingWarrior.Fury = 0;
-        }
-
-
     }
 }
