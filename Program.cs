@@ -4,15 +4,6 @@ using System.Threading;
 
 namespace OOP8_3
 {
-    //    Создать 5 бойцов, пользователь выбирает 2 бойцов и они сражаются друг с другом до смерти.
-    //    У каждого бойца могут быть свои статы.
-    //Каждый игрок должен иметь особую способность для атаки, которая свойственна только его классу!
-    //Если можно выбрать одинаковых бойцов, то это не должна быть одна и та же ссылка на одного бойца,
-    //чтобы он не атаковал сам себя.
-    //Пример, что может быть уникальное у бойцов. Кто-то каждый 3 удар наносит удвоенный урон,
-    //другой имеет 30% увернуться от полученного урона, кто-то при получении урона немного себя лечит.
-    //Будут новые поля у наследников.
-    //У кого-то может быть мана и это только его особенность.
     class Program
     {
         static void Main(string[] args)
@@ -55,7 +46,7 @@ namespace OOP8_3
             int firstGladiator = 1;
             int secondGladiator = 2;
 
-            _ui.ChooseGladiators(_warriors.Length, ref firstGladiator, ref secondGladiator);
+            _ui.SelectGladiators(_warriors.Length, ref firstGladiator, ref secondGladiator);
             AddGladiators(firstGladiator, secondGladiator);
         }
 
@@ -220,7 +211,7 @@ namespace OOP8_3
             }
         }
 
-        internal void ChooseGladiators(int countGladiators, ref int firstGladiator, ref int secondGladiator)
+        internal void SelectGladiators(int countGladiators, ref int firstGladiator, ref int secondGladiator)
         {
             Console.WriteLine();
             bool continueSelection = true;
@@ -249,7 +240,7 @@ namespace OOP8_3
                 Console.Write("Выберите номер второго гладиатора - ");
                 string secondGladiatorString = Console.ReadLine();
 
-                if (IsNumber(secondGladiatorString, ref secondGladiator) & secondGladiator <= countGladiators & secondGladiator > 0)
+                if (IsNumber(secondGladiatorString, ref secondGladiator) & secondGladiator <= countGladiators & secondGladiator > 0&firstGladiator !=secondGladiator)
                 {
                     continueSelection = false;
                 }
