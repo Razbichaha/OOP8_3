@@ -76,7 +76,7 @@ namespace OOP8_3
 
         private void StartFight()
         {
-            int firstFighter = _fight.WhoFirst(_gladiators.Length);
+            int firstFighter = _fight.FindWhoFirst(_gladiators.Length);
             bool continueFight = true;
             int move = firstFighter;
 
@@ -87,7 +87,7 @@ namespace OOP8_3
                 if (_gladiators[move].Fury == _configs.GetFuryWarrior(_gladiators[move].ClassWarriors))
                 {
                     _gladiators[move].AttackFuriously(_gladiators[move], _gladiators[MoveAbout(move)]);
-                    _gladiators[move].Fury = 0;
+                    _gladiators[move].SetFury(0);
                 }
 
                 ShowGladiatorParameters();
@@ -123,7 +123,7 @@ namespace OOP8_3
     {
         private Configs _configs = new();
 
-        internal int WhoFirst(int howManyFighters)
+        internal int FindWhoFirst(int howManyFighters)
         {
             Random random = new();
             int first = random.Next(0, howManyFighters - 1);
@@ -139,24 +139,25 @@ namespace OOP8_3
                 damageDealt = 1;
             }
 
-            defendingWarrior.Healt -= damageDealt;
+            defendingWarrior.SetHealt(
+            defendingWarrior.Healt - damageDealt);
 
             if (defendingWarrior.Armor > 0)
             {
-                defendingWarrior.Armor = defendingWarrior.Armor - (defendingWarrior.Armor / 10);
+                defendingWarrior.SetArmor(defendingWarrior.Armor - (defendingWarrior.Armor / 10));
             }
             else if (defendingWarrior.Armor < 0)
             {
-                defendingWarrior.Armor = 0;
+                defendingWarrior.SetArmor(0);
             }
 
             if (damageDealt > _configs.DamageWhichAddFury)
             {
-                attackingWarrior.Fury += _configs.FuryIncrement;
+                attackingWarrior.SetFury(attackingWarrior.Fury + _configs.FuryIncrement);
 
                 if (attackingWarrior.Fury > _configs.GetFuryWarrior(attackingWarrior.ClassWarriors))
                 {
-                    attackingWarrior.Fury = _configs.Fury[_configs.GetIndexClassWarior(attackingWarrior.ClassWarriors)];
+                    attackingWarrior.SetFury(_configs.Fury[_configs.GetIndexClassWarior(attackingWarrior.ClassWarriors)]);
                 }
             }
         }
@@ -284,18 +285,42 @@ namespace OOP8_3
         private Configs _configs = new();
 
         internal string ClassWarriors { get; private set; }
-        internal int Healt { get; set; }
-        internal int Fury { get; set; }
-        internal int Armor { get; set; }
-        internal int Damage { get; set; }
+
+        internal int Healt { get; private set; }
+
+        internal int Fury { get; private set; }
+
+        internal int Armor { get; private set; }
+
+        internal int Damage { get; private set; }
+
+        internal void SetDamage(int value)
+        {
+            Damage = value;
+        }
+
+        internal void SetArmor(int value)
+        {
+            Armor = value;
+        }
+
+        internal void SetFury(int value)
+        {
+            Fury = value;
+        }
+
+        internal void SetHealt(int value)
+        {
+            Healt = value;
+        }
 
         internal void CreateWariors(int index)
         {
             ClassWarriors = _configs.ClassWarriors[index];
-            Healt = _configs.Healt[index];
-            Fury = 0;
-            Armor = _configs.Armor[index];
-            Damage = _configs.Damage[index];
+            SetHealt(_configs.Healt[index]);
+            SetFury(0);
+            SetArmor(_configs.Armor[index]);
+            SetDamage(_configs.Damage[index]);
         }
 
         internal virtual void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
@@ -310,8 +335,8 @@ namespace OOP8_3
         {
             int multiplier = 2;
             int damage = attackingWarrior.Damage * multiplier;
-            defendingWarrior.Healt -= damage;
-            attackingWarrior.Fury = 0;
+            defendingWarrior.SetHealt(defendingWarrior.Healt - damage);
+            attackingWarrior.SetFury(0);
         }
     }
 
@@ -321,9 +346,9 @@ namespace OOP8_3
         {
             int multiplier = 5;
             int armorDamage = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= armorDamage;
-            defendingWarrior.Healt -= attackingWarrior.Damage;
-            defendingWarrior.Fury = 0;
+            defendingWarrior.SetArmor(defendingWarrior.Armor - armorDamage);
+            defendingWarrior.SetHealt(defendingWarrior.Healt - attackingWarrior.Damage);
+            defendingWarrior.SetFury(0);
         }
     }
 
@@ -333,9 +358,9 @@ namespace OOP8_3
         {
             int multiplier = 3;
             int armorDamage = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= armorDamage;
-            defendingWarrior.Healt -= attackingWarrior.Damage;
-            defendingWarrior.Fury = 0;
+            defendingWarrior.SetArmor(defendingWarrior.Armor - armorDamage);
+            defendingWarrior.SetHealt(defendingWarrior.Healt - attackingWarrior.Damage);
+            defendingWarrior.SetFury(0);
         }
     }
 
@@ -344,9 +369,9 @@ namespace OOP8_3
         internal override void AttackFuriously(Warrior attackingWarrior, Warrior defendingWarrior)
         {
             int armorDamage = attackingWarrior.Damage;
-            defendingWarrior.Armor -= armorDamage;
-            defendingWarrior.Healt -= attackingWarrior.Damage;
-            defendingWarrior.Fury = 0;
+            defendingWarrior.SetArmor(defendingWarrior.Armor - armorDamage);
+            defendingWarrior.SetHealt(defendingWarrior.Healt - attackingWarrior.Damage);
+            defendingWarrior.SetFury(0);
         }
     }
 
@@ -356,9 +381,9 @@ namespace OOP8_3
         {
             int multiplier = 2;
             int armorDamage = attackingWarrior.Damage / multiplier;
-            defendingWarrior.Armor -= armorDamage / multiplier;
-            defendingWarrior.Healt -= attackingWarrior.Damage;
-            defendingWarrior.Fury = 0;
+            defendingWarrior.SetArmor(defendingWarrior.Armor - armorDamage / multiplier);
+            defendingWarrior.SetHealt(defendingWarrior.Healt - attackingWarrior.Damage);
+            defendingWarrior.SetFury(0);
         }
     }
 
